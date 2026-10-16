@@ -21,6 +21,10 @@ public class Paciente {
     private String telefone;
     private LocalDate dataNascimento;
 
+    @ManyToOne
+    @JoinColumn(name = "cuidador_id") // Cria a coluna de chave estrangeira no PostgreSQL
+    private Cuidador cuidador;
+
 
     @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL)// 1 Paciente para muitos  Registros de sinais vitais
     private List<RegistroSinalVital> historicoRegistros = new ArrayList<>();
@@ -41,18 +45,20 @@ public class Paciente {
 
     //Metodos
 
-    public void adicionarRegistro(RegistroSinalVital adicionarRegistro){
-        historicoRegistros.add(adicionarRegistro);
+    public void adicionarRegistro(RegistroSinalVital registroSinalVital){
+        registroSinalVital.setPaciente(this); // configura a variavel paciente adicionando o paciente que está utilizando o método; Necessário para Criação Da FK
+        historicoRegistros.add(registroSinalVital);
 
     }
 
     // Adiciona a lista de limiar do paciente um objeto limiar -- obs: Não utilizamos o metodo, ele é acionado pelo metodo da classe Cuidador - definirLimiarPaciente
     public void adicionarAListaLimiarSegurancaPaciente(LimiarSeguranca limiarSeguranca){
+        limiarSeguranca.setPaciente(this);
         this.limiarSegurancaPaciente.add(limiarSeguranca);
 
     }
 
-    public void AnalisarRegistros(){
+    public void analisarRegistros(){
 
         /*limiarSegurancaPaciente.get(i).getTipoSinalVital();
         limiarSegurancaPaciente.get(i).getValorMax();
@@ -66,15 +72,15 @@ public class Paciente {
            /* historicoRegistros.get(j).getTipoSinalVital();
             historicoRegistros.get(j).getValorSinalVital();*/
 
-            if (limiarSegurancaPaciente.get(i).getTipoSinalVital() == historicoRegistros.get(j).getTipoSinalVital()) {
-                if (historicoRegistros.get(j).getValorSinalVital() > limiarSegurancaPaciente.get(i).getValorMax() || historicoRegistros.get(j).getValorSinalVital() < limiarSegurancaPaciente.get(i).getValorMin()) {
+                if (limiarSegurancaPaciente.get(i).getTipoSinalVital() == historicoRegistros.get(j).getTipoSinalVital()) {
+                    if (historicoRegistros.get(j).getValorSinalVital() > limiarSegurancaPaciente.get(i).getValorMax() || historicoRegistros.get(j).getValorSinalVital() < limiarSegurancaPaciente.get(i).getValorMin()) {
 
-                    System.out.println("Alerta!!! o Valor Mínimo da " + limiarSegurancaPaciente.get(i).getTipoSinalVital() + " é de: " + limiarSegurancaPaciente.get(i).getValorMin() + ". Já o Máximo é de: " + limiarSegurancaPaciente.get(i).getValorMax() );
-                    System.out.println("O Valor medido é dê: " + historicoRegistros.get(j).getValorSinalVital());
+                        System.out.println("Alerta!!! o Valor Mínimo da " + limiarSegurancaPaciente.get(i).getTipoSinalVital() + " é de: " + limiarSegurancaPaciente.get(i).getValorMin() + ". Já o Máximo é de: " + limiarSegurancaPaciente.get(i).getValorMax() );
+                        System.out.println("O Valor medido é dê: " + historicoRegistros.get(j).getValorSinalVital());
+                    }
+
+                    else System.out.println("Tudo ok!");
                 }
-
-                else System.out.println("Tudo ok!");
-            }
 
             }
 
@@ -84,11 +90,70 @@ public class Paciente {
 
 
 
+    /// GETTERS E SETTERS
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
+    public String getNome() {
+        return nome;
+    }
 
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
+    public int getIdade() {
+        return idade;
+    }
 
+    public void setIdade(int idade) {
+        this.idade = idade;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public LocalDate getDataNascimento() {
+        return dataNascimento;
+    }
+
+    public void setDataNascimento(LocalDate dataNascimento) {
+        this.dataNascimento = dataNascimento;
+    }
+
+    public List<RegistroSinalVital> getHistoricoRegistros() {
+        return historicoRegistros;
+    }
+
+    public void setHistoricoRegistros(List<RegistroSinalVital> historicoRegistros) {
+        this.historicoRegistros = historicoRegistros;
+    }
+
+    public List<LimiarSeguranca> getLimiarSegurancaPaciente() {
+        return limiarSegurancaPaciente;
+    }
+
+    public void setLimiarSegurancaPaciente(List<LimiarSeguranca> limiarSegurancaPaciente) {
+        this.limiarSegurancaPaciente = limiarSegurancaPaciente;
+    }
+
+    public Cuidador getCuidador() {
+        return cuidador;
+    }
+
+    public void setCuidador(Cuidador cuidador) {
+        this.cuidador = cuidador;
+    }
 }
 
 
