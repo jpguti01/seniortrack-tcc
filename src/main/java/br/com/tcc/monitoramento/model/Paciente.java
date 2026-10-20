@@ -45,11 +45,6 @@ public class Paciente {
 
     //Metodos
 
-    public void adicionarRegistro(RegistroSinalVital registroSinalVital){
-        registroSinalVital.setPaciente(this); // configura a variavel paciente adicionando o paciente que está utilizando o método; Necessário para Criação Da FK
-        historicoRegistros.add(registroSinalVital);
-
-    }
 
     // Adiciona a lista de limiar do paciente um objeto limiar -- obs: Não utilizamos o metodo, ele é acionado pelo metodo da classe Cuidador - definirLimiarPaciente
     public void adicionarAListaLimiarSegurancaPaciente(LimiarSeguranca limiarSeguranca){
@@ -57,7 +52,7 @@ public class Paciente {
         this.limiarSegurancaPaciente.add(limiarSeguranca);
 
     }
-
+ 
     public void analisarRegistros(){
 
         /*limiarSegurancaPaciente.get(i).getTipoSinalVital();

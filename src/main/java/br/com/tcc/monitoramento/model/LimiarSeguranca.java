@@ -21,7 +21,7 @@ public class LimiarSeguranca {
 
     @ManyToOne
     @JoinColumn(name = "cuidador_id") // Cria a FK para Cuidador
-    private Cuidador definidoPor;
+    private Cuidador cuidador;
 
 
     public LimiarSeguranca() {}
@@ -76,11 +76,11 @@ public class LimiarSeguranca {
         this.tipoSinalVital = tipoSinalVital;
     }
 
-    public Cuidador getDefinidoPor() {
-        return definidoPor;
+    public Cuidador getCuidador() {
+        return cuidador;
     }
 
-    public void setDefinidoPor(Cuidador definidoPor) {
-        this.definidoPor = definidoPor;
+    public void setCuidador(Cuidador cuidador) {
+        this.cuidador = cuidador;
     }
 }
