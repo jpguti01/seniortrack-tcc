@@ -1,5 +1,6 @@
 package br.com.tcc.monitoramento.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,14 +10,8 @@ import jakarta.persistence.*;
 
 @Entity //Transformando em Tabela
 @Table(name = "tb_paciente") // atribuindo um nome para tabela
-public class Paciente {
+public class Paciente extends Usuario {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long id;
-
-    @Column(nullable = false, length = 100) //cria as colunas a adiciona regras
-    private String nome;
     private int idade;
     private String telefone;
     private LocalDate dataNascimento;
@@ -35,16 +30,13 @@ public class Paciente {
 
     public Paciente() {} // Construtor Vazio (Obrigatorio Para o Jpa Conseguir Instanciar)
 
-    public Paciente(String nome, int idade, String telefone) {
-
-        this.nome = nome;
+    public Paciente(String nome, String email, String senhaHash, int idade, String telefone) {
+        super(nome, email, senhaHash);
         this.idade = idade;
         this.telefone = telefone;
-
     }
 
     //Metodos
-
 
     // Adiciona a lista de limiar do paciente um objeto limiar -- obs: Não utilizamos o metodo, ele é acionado pelo metodo da classe Cuidador - definirLimiarPaciente
     public void adicionarAListaLimiarSegurancaPaciente(LimiarSeguranca limiarSeguranca){
@@ -52,55 +44,13 @@ public class Paciente {
         this.limiarSegurancaPaciente.add(limiarSeguranca);
 
     }
- 
-    public void analisarRegistros(){
 
-        /*limiarSegurancaPaciente.get(i).getTipoSinalVital();
-        limiarSegurancaPaciente.get(i).getValorMax();
-        limiarSegurancaPaciente.get(i).getValorMin();*/
-
-        for (int i = 0; i < limiarSegurancaPaciente.size() ; i++) {
-
-
-            for (int j = 0; j < historicoRegistros.size() ; j++) {
-
-           /* historicoRegistros.get(j).getTipoSinalVital();
-            historicoRegistros.get(j).getValorSinalVital();*/
-
-                if (limiarSegurancaPaciente.get(i).getTipoSinalVital() == historicoRegistros.get(j).getTipoSinalVital()) {
-                    if (historicoRegistros.get(j).getValorSinalVital() > limiarSegurancaPaciente.get(i).getValorMax() || historicoRegistros.get(j).getValorSinalVital() < limiarSegurancaPaciente.get(i).getValorMin()) {
-
-                        System.out.println("Alerta!!! o Valor Mínimo da " + limiarSegurancaPaciente.get(i).getTipoSinalVital() + " é de: " + limiarSegurancaPaciente.get(i).getValorMin() + ". Já o Máximo é de: " + limiarSegurancaPaciente.get(i).getValorMax() );
-                        System.out.println("O Valor medido é dê: " + historicoRegistros.get(j).getValorSinalVital());
-                    }
-
-                    else System.out.println("Tudo ok!");
-                }
-
-            }
-
-        }
-
+    public void adicionarRegistro(RegistroSinalVital registroSinalVital){
+        registroSinalVital.setPaciente(this);
+        this.historicoRegistros.add(registroSinalVital);
     }
-
-
 
     /// GETTERS E SETTERS
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
 
     public int getIdade() {
         return idade;
@@ -126,6 +76,11 @@ public class Paciente {
         this.dataNascimento = dataNascimento;
     }
 
+    // Ignorados no JSON para nao entrar em loop infinito com as referencias de
+    // volta para Paciente (RegistroSinalVital.paciente, LimiarSeguranca.paciente).
+    // Use os endpoints dedicados (/registrosinalvital/paciente/{id} e
+    // /limiarseguranca/paciente/{id}) para essas listas.
+    @JsonIgnore
     public List<RegistroSinalVital> getHistoricoRegistros() {
         return historicoRegistros;
     }
@@ -134,6 +89,7 @@ public class Paciente {
         this.historicoRegistros = historicoRegistros;
     }
 
+    @JsonIgnore
     public List<LimiarSeguranca> getLimiarSegurancaPaciente() {
         return limiarSegurancaPaciente;
     }

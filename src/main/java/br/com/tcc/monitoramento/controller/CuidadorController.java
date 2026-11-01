@@ -2,7 +2,6 @@ package br.com.tcc.monitoramento.controller;
 
 import br.com.tcc.monitoramento.model.Cuidador;
 import br.com.tcc.monitoramento.service.CuidadorService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,10 +19,19 @@ public class CuidadorController {
         this.cuidadorService = cuidadorService;
     }
 
-    @PostMapping
-    public ResponseEntity<Cuidador> salvar(@RequestBody Cuidador cuidador){
-        Cuidador novoCuidador = cuidadorService.salvar(cuidador);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoCuidador);
+    // O cadastro de cuidadores acontece em POST /auth/cadastro/cuidador (AuthController),
+    // unico fluxo que define a senha com hash.
+
+    // RF09: o app Flutter chama este endpoint apos obter/renovar o token FCM do dispositivo.
+    @PutMapping("/{id}/token-fcm")
+    public ResponseEntity<Void> atualizarTokenFcm(@PathVariable Long id, @RequestBody String tokenFcm) {
+        Cuidador cuidador = cuidadorService.buscarPorId(id);
+        if (cuidador == null) {
+            return ResponseEntity.notFound().build();
+        }
+        cuidador.setTokenFcm(tokenFcm);
+        cuidadorService.salvar(cuidador);
+        return ResponseEntity.noContent().build();
     }
 
 

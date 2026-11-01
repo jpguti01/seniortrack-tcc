@@ -54,12 +54,24 @@ public double getValorSinalVital() {
         return valorSinalVital;
 }
 
+public void setValorSinalVital(double valorSinalVital) {
+        this.valorSinalVital = valorSinalVital;
+}
+
 public void setTipoSinalVital(TipoSinalVital tipoSinalVital) {
         this.tipoSinalVital = tipoSinalVital;
 }
 
 public LocalDateTime getHoraRegistro() {
         return horaRegistro;
+}
+
+// O horario e' sempre definido pelo servidor no momento do salvamento
+// (ver RegistroSinalVitalService.salvar) para que o cliente nao possa
+// forjar a data/hora da coleta; por isso o campo e' ignorado se vier no JSON.
+@com.fasterxml.jackson.annotation.JsonIgnore
+public void setHoraRegistro(LocalDateTime horaRegistro) {
+        this.horaRegistro = horaRegistro;
 }
 
 

@@ -8,6 +8,8 @@ import br.com.tcc.monitoramento.repository.LimiarSegurancaRepository;
 import br.com.tcc.monitoramento.repository.PacienteRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class LimiarSegurancaService {
 
@@ -28,22 +30,29 @@ public class LimiarSegurancaService {
         }
 
         if (limiarSeguranca.getPaciente() == null){
-            throw new RuntimeException("Opaciete");
-
+            throw new NegocioException("O paciente é obrigatório.");
         }
 
         if (limiarSeguranca.getCuidador() == null){
-                throw new RuntimeException( "Sem cuidador");
-
-
+            throw new NegocioException("O cuidador é obrigatório.");
         }
 
-            return limiarSegurancaRepository.save(limiarSeguranca);
+        // UC-04, fluxo alternativo A1: o minimo nao pode ser igual ou maior que o maximo.
+        if (limiarSeguranca.getValorMin() >= limiarSeguranca.getValorMax()) {
+            throw new NegocioException("O valor mínimo deve ser menor que o valor máximo.");
+        }
+
+        return limiarSegurancaRepository.save(limiarSeguranca);
     }
 
 
     public void excluir(LimiarSeguranca limiarSeguranca){
         limiarSegurancaRepository.delete(limiarSeguranca);
+    }
+
+    // RF08: lista os limiares configurados de um paciente (usado no dashboard do cuidador).
+    public List<LimiarSeguranca> listarPorPaciente(Long pacienteId) {
+        return limiarSegurancaRepository.findByPacienteId(pacienteId);
     }
 
 

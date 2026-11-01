@@ -2,8 +2,6 @@ package br.com.tcc.monitoramento.controller;
 
 import br.com.tcc.monitoramento.model.Paciente;
 import br.com.tcc.monitoramento.service.PacienteService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,12 +18,8 @@ public class PacienteController {
         this.pacienteService = pacienteService;
     }
 
-
-    @PostMapping
-    public ResponseEntity<Paciente> salvar(@RequestBody Paciente paciente){
-        Paciente novoPaciente = pacienteService.salvar(paciente);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoPaciente);
-    }
+    // O cadastro de pacientes acontece em POST /auth/cadastro/paciente (AuthController),
+    // unico fluxo que define a senha com hash. Este controller so le/gerencia dados.
 
     @GetMapping
     public ResponseEntity<List<Paciente>> listar() {
