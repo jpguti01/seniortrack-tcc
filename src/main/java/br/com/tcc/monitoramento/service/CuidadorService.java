@@ -2,24 +2,31 @@ package br.com.tcc.monitoramento.service;
 
 
 import br.com.tcc.monitoramento.model.Cuidador;
-import br.com.tcc.monitoramento.model.Paciente;
 import br.com.tcc.monitoramento.repository.CuidadorRepository;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
 @Service
 public class CuidadorService {
     private final CuidadorRepository cuidadorRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public CuidadorService(CuidadorRepository cuidadorRepository) {
+    public CuidadorService(CuidadorRepository cuidadorRepository, PasswordEncoder passwordEncoder) {
         this.cuidadorRepository = cuidadorRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-
+    // RF01: cadastra um novo cuidador, aplicando o hash BCrypt na senha (RNF01)
+    // e recusando e-mails ja cadastrados.
+    public Cuidador cadastrar(Cuidador cuidador, String senhaPura) {
+        if (cuidadorRepository.existsByEmail(cuidador.getEmail())) {
+            throw new IllegalArgumentException("Ja existe um cadastro com este e-mail.");
+        }
+        cuidador.setSenhaHash(passwordEncoder.encode(senhaPura));
+        return cuidadorRepository.save(cuidador);
+    }
 
     //gera um cuidador no banco
     public Cuidador salvar(Cuidador cuidador){

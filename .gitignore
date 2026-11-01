@@ -37,3 +37,8 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Credenciais - nunca commitar ###
+src/main/resources/firebase-service-account.json
+*.env
+application-local.properties

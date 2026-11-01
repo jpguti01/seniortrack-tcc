@@ -2,6 +2,7 @@ package br.com.tcc.monitoramento.service;
 
 import br.com.tcc.monitoramento.model.Paciente;
 import br.com.tcc.monitoramento.repository.PacienteRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,14 +12,23 @@ public class PacienteService {
 
     // 1. Declaramos o repository que será injetado pelo Spring
     private final PacienteRepository pacienteRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // 2. Construtor para Injeção de Dependência (Boa prática no Spring Boot)
-    public PacienteService(PacienteRepository pacienteRepository) {
-
+    public PacienteService(PacienteRepository pacienteRepository, PasswordEncoder passwordEncoder) {
         this.pacienteRepository = pacienteRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-
+    // RF01: cadastra um novo paciente, aplicando o hash BCrypt na senha (RNF01)
+    // e recusando e-mails ja cadastrados.
+    public Paciente cadastrar(Paciente paciente, String senhaPura) {
+        if (pacienteRepository.existsByEmail(paciente.getEmail())) {
+            throw new IllegalArgumentException("Ja existe um cadastro com este e-mail.");
+        }
+        paciente.setSenhaHash(passwordEncoder.encode(senhaPura));
+        return pacienteRepository.save(paciente);
+    }
 
     //Salvar ou atualizar o paciente
     public Paciente salvar(Paciente paciente){
@@ -27,8 +37,9 @@ public class PacienteService {
     }
 
 
-    public List<Paciente> listar(){
-        return pacienteRepository.findAll();
+    // RNF05: so os pacientes vinculados a este cuidador, nunca todos do sistema.
+    public List<Paciente> listarPorCuidador(Long cuidadorId){
+        return pacienteRepository.findByCuidadorId(cuidadorId);
     }
 
 

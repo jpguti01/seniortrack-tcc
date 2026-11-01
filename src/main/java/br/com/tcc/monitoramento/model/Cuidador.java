@@ -1,5 +1,6 @@
 package br.com.tcc.monitoramento.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -9,16 +10,16 @@ import java.util.List;
 
 @Entity // transformando em tabela
 @Table(name = "tb_cuidador") // nome da tabela
-public class Cuidador {
+public class Cuidador extends Usuario {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, length = 100)
-    private String nome;
     private int idade;
     private String telefone;
+
+    // Token do Firebase Cloud Messaging do dispositivo do cuidador, usado pelo
+    // NotificacaoService para enviar o alerta push (RF09). Atualizado pelo app
+    // Flutter sempre que o token for renovado pelo Firebase.
+    @Column(name = "token_fcm")
+    private String tokenFcm;
 
     @OneToMany(mappedBy = "cuidador", cascade = CascadeType.ALL)
     private List<Paciente> pacientes = new ArrayList<>();
@@ -28,8 +29,8 @@ public class Cuidador {
     } // construtor vazio JPA
 
     //Construtor
-    public Cuidador(String nome, int idade, String telefone) {
-        this.nome = nome;
+    public Cuidador(String nome, String email, String senhaHash, int idade, String telefone) {
+        super(nome, email, senhaHash);
         this.idade = idade;
         this.telefone = telefone;
     }
@@ -47,24 +48,12 @@ public class Cuidador {
 
     }
 
-    public void checarRegistroPaciente(Paciente paciente) {
-        paciente.analisarRegistros();
+    public String getTokenFcm() {
+        return tokenFcm;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setTokenFcm(String tokenFcm) {
+        this.tokenFcm = tokenFcm;
     }
 
     public int getIdade() {
@@ -84,6 +73,9 @@ public class Cuidador {
     }
 
 
+    // Ignorado no JSON para nao entrar em loop infinito com Paciente.cuidador.
+    // Use GET /pacientes (ou um endpoint dedicado) para listar os pacientes de um cuidador.
+    @JsonIgnore
     public List<Paciente> getPacientes() {
         return pacientes;
     }
