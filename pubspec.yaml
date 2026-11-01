@@ -1,0 +1,32 @@
+name: telemonitoramento_app
+description: "App de telemonitoramento de sinais vitais para idosos (TCC)"
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # Chamadas HTTP para a API REST (Spring Boot)
+  http: ^1.2.2
+
+  # Gerenciamento de estado simples (ChangeNotifier)
+  provider: ^6.1.2
+
+  # Guarda o token JWT de forma segura no dispositivo
+  flutter_secure_storage: ^9.2.2
+
+  # Formatação de datas em pt-BR
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
