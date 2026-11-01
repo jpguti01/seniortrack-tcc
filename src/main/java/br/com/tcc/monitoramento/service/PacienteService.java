@@ -37,8 +37,9 @@ public class PacienteService {
     }
 
 
-    public List<Paciente> listar(){
-        return pacienteRepository.findAll();
+    // RNF05: so os pacientes vinculados a este cuidador, nunca todos do sistema.
+    public List<Paciente> listarPorCuidador(Long cuidadorId){
+        return pacienteRepository.findByCuidadorId(cuidadorId);
     }
 
 

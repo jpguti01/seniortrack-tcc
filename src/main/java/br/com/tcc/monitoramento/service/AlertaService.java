@@ -20,9 +20,12 @@ public class AlertaService {
         return alertaRepository.findByRegistroSinalVital_Paciente_IdOrderByDataHoraDesc(pacienteId);
     }
 
-    public Alerta marcarComoResolvido(Long alertaId) {
-        Alerta alerta = alertaRepository.findById(alertaId)
+    public Alerta buscarPorId(Long id) {
+        return alertaRepository.findById(id)
                 .orElseThrow(() -> new NegocioException("Alerta não encontrado."));
+    }
+
+    public Alerta marcarComoResolvido(Alerta alerta) {
         alerta.setResolvido(true);
         return alertaRepository.save(alerta);
     }

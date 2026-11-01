@@ -12,4 +12,7 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
     Optional<Paciente> findByEmail(String email);
 
     boolean existsByEmail(String email);
+
+    // RNF05: um cuidador so deve listar os pacientes vinculados a ele, nunca todos do sistema.
+    java.util.List<Paciente> findByCuidadorId(Long cuidadorId);
 }
