@@ -65,7 +65,15 @@ O registro de um sinal vital (`POST /registrosinalvital`) aciona automaticamente
 o motor de regras: se o valor estiver fora do limiar configurado para aquele
 paciente e tipo de sinal, um `Alerta` é persistido e uma notificação push é
 enviada ao cuidador vinculado (via o token FCM registrado em
-`PUT /cuidador/{id}/token-fcm`).
+`PUT /cuidador/token-fcm`).
+
+## Autorização por recurso
+
+Além do JWT (quem é você), cada endpoint que recebe um `pacienteId` checa
+posse do recurso (`AutorizacaoService`): um paciente só acessa os próprios
+dados; um cuidador só acessa os dados dos pacientes vinculados a ele. Chamadas
+fora dessa regra retornam `403`. `GET /pacientes` lista apenas os pacientes do
+cuidador autenticado, nunca todos do sistema.
 
 ## O que ainda falta (em relação à documentação do TCC)
 
@@ -76,7 +84,6 @@ enviada ao cuidador vinculado (via o token FCM registrado em
   já funciona; combinações mais ricas (ex: tipo + período ao mesmo tempo)
   podem ser adicionadas conforme a necessidade do front-end.
 - Testes automatizados (`src/test`) - ainda não existem.
-- Autorização refinada por recurso (ex: impedir que um paciente autenticado
-  veja o histórico de outro paciente) - hoje a API exige autenticação, mas a
-  checagem de que o `pacienteId` da URL pertence ao usuário logado ainda não
-  foi implementada.
+- `GET /cuidador` e `GET /cuidador/{id}` ainda não têm restrição de posse
+  (qualquer usuário autenticado pode ver nome/telefone de qualquer cuidador);
+  deixado assim por ora porque não há um fluxo documentado que precise disso.
