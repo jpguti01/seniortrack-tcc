@@ -1,5 +1,6 @@
 package br.com.tcc.monitoramento.controller;
 
+import br.com.tcc.monitoramento.model.Cuidador;
 import br.com.tcc.monitoramento.model.LimiarSeguranca;
 import br.com.tcc.monitoramento.security.AutorizacaoService;
 import br.com.tcc.monitoramento.security.UsuarioAutenticado;
@@ -24,14 +25,26 @@ public class LimiarSegurancaController {
         this.autorizacaoService = autorizacaoService;
     }
 
-    // Somente o cuidador vinculado ao paciente pode configurar seus limiares (RF08).
+    // RF08, UC-04: somente o cuidador vinculado ao paciente indicado pode
+    // configurar seus limiares. Falha fechado: sem paciente valido no corpo,
+    // a requisicao e' rejeitada (nunca segue sem autorizar). O campo "cuidador"
+    // e' sempre o usuario autenticado, nunca o que vier no corpo da requisicao
+    // (evita que um cuidador atribua o limiar a outro cuidador). O id tambem
+    // e' sempre ignorado, para que isto so crie um limiar novo.
     @PostMapping
-    public ResponseEntity<LimiarSeguranca> salvar(@RequestBody LimiarSeguranca limiarSeguranca,
-                                                   @AuthenticationPrincipal UsuarioAutenticado usuario) {
-        if (limiarSeguranca.getPaciente() != null && limiarSeguranca.getPaciente().getId() != null) {
-            autorizacaoService.garantirCuidadorDoPaciente(limiarSeguranca.getPaciente().getId(), usuario);
+    public ResponseEntity<?> salvar(@RequestBody LimiarSeguranca limiarSeguranca,
+                                     @AuthenticationPrincipal UsuarioAutenticado usuario) {
+        if (limiarSeguranca.getPaciente() == null || limiarSeguranca.getPaciente().getId() == null) {
+            return ResponseEntity.badRequest().body("O paciente é obrigatório.");
         }
-        LimiarSeguranca novaLimiar =  limiarSegurancaService.salvar(limiarSeguranca);
+        autorizacaoService.garantirCuidadorDoPaciente(limiarSeguranca.getPaciente().getId(), usuario);
+
+        Cuidador referenciaCuidador = new Cuidador();
+        referenciaCuidador.setId(usuario.getId());
+        limiarSeguranca.setCuidador(referenciaCuidador);
+        limiarSeguranca.setId(null);
+
+        LimiarSeguranca novaLimiar = limiarSegurancaService.salvar(limiarSeguranca);
         return ResponseEntity.status(HttpStatus.CREATED).body(novaLimiar);
     }
 

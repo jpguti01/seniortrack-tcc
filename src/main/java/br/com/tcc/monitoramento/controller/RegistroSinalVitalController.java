@@ -1,13 +1,16 @@
 package br.com.tcc.monitoramento.controller;
 
+import br.com.tcc.monitoramento.model.Paciente;
 import br.com.tcc.monitoramento.model.RegistroSinalVital;
 import br.com.tcc.monitoramento.model.RegistroSinalVital.TipoSinalVital;
 import br.com.tcc.monitoramento.security.AutorizacaoService;
+import br.com.tcc.monitoramento.security.TipoUsuario;
 import br.com.tcc.monitoramento.security.UsuarioAutenticado;
 import br.com.tcc.monitoramento.service.RegistroSinalVitalService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,12 +31,22 @@ public class RegistroSinalVitalController {
         this.autorizacaoService = autorizacaoService;
     }
 
+    // UC-02: so o proprio paciente registra o seu sinal vital. O dono do registro
+    // vem sempre do token JWT, nunca do corpo da requisicao (evita que um campo
+    // "paciente" forjado grave o dado em nome de outra pessoa), e o id e' sempre
+    // ignorado para garantir que isto so cria um registro novo, nunca sobrescreve um existente.
     @PostMapping
     public ResponseEntity<RegistroSinalVital> salvar(@RequestBody RegistroSinalVital registroSinalVital,
                                                        @AuthenticationPrincipal UsuarioAutenticado usuario) {
-        if (registroSinalVital.getPaciente() != null && registroSinalVital.getPaciente().getId() != null) {
-            autorizacaoService.garantirProprioPaciente(registroSinalVital.getPaciente().getId(), usuario);
+        if (usuario.getTipo() != TipoUsuario.PACIENTE) {
+            throw new AccessDeniedException("Apenas o paciente pode registrar o próprio sinal vital.");
         }
+
+        Paciente referenciaPaciente = new Paciente();
+        referenciaPaciente.setId(usuario.getId());
+        registroSinalVital.setPaciente(referenciaPaciente);
+        registroSinalVital.setId(0);
+
         RegistroSinalVital novoRegistroSinalVital = registroSinalVitalService.salvar(registroSinalVital);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoRegistroSinalVital);
     }
