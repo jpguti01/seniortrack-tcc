@@ -16,6 +16,12 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
+    public ResponseEntity<Map<String, String>> tratarStatus(org.springframework.web.server.ResponseStatusException e) {
+        return ResponseEntity.status(e.getStatusCode()).body(Map.of("erro",
+                e.getReason() == null ? "Não foi possível concluir. Tente novamente." : e.getReason()));
+    }
+
     @ExceptionHandler({IllegalArgumentException.class, NegocioException.class})
     public ResponseEntity<Map<String, String>> tratarErroDeNegocio(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("erro", e.getMessage()));

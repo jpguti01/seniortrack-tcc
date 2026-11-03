@@ -11,10 +11,29 @@ import java.time.LocalDateTime;
 @Table(name = "tb_registro_sinal_vital") // atribuindo nome a atbela
 public class RegistroSinalVital {
 
+    // O JSON continua usando o nome da constante (ex: "GLICEMIA"); rotulo e
+    // unidade servem so para os textos das notificacoes.
     public enum TipoSinalVital{
-        PRESSAO_ARTERIAL,
-        GLICEMIA,
-        PESO;};
+        PRESSAO_ARTERIAL("Pressão arterial", "mmHg"),
+        GLICEMIA("Glicemia", "mg/dL"),
+        PESO("Peso", "kg");
+
+        private final String rotulo;
+        private final String unidade;
+
+        TipoSinalVital(String rotulo, String unidade) {
+            this.rotulo = rotulo;
+            this.unidade = unidade;
+        }
+
+        public String getRotulo() {
+            return rotulo;
+        }
+
+        public String getUnidade() {
+            return unidade;
+        }
+    }
 
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,6 +81,7 @@ public void setTipoSinalVital(TipoSinalVital tipoSinalVital) {
         this.tipoSinalVital = tipoSinalVital;
 }
 
+@com.fasterxml.jackson.annotation.JsonProperty(access = com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY)
 public LocalDateTime getHoraRegistro() {
         return horaRegistro;
 }
@@ -69,7 +89,6 @@ public LocalDateTime getHoraRegistro() {
 // O horario e' sempre definido pelo servidor no momento do salvamento
 // (ver RegistroSinalVitalService.salvar) para que o cliente nao possa
 // forjar a data/hora da coleta; por isso o campo e' ignorado se vier no JSON.
-@com.fasterxml.jackson.annotation.JsonIgnore
 public void setHoraRegistro(LocalDateTime horaRegistro) {
         this.horaRegistro = horaRegistro;
 }

@@ -42,3 +42,5 @@ build/
 src/main/resources/firebase-service-account.json
 *.env
 application-local.properties
+### Logs de crash da JVM ###
+hs_err_pid*.log

@@ -21,6 +21,10 @@ public interface RegistroSinalVitalRepository extends JpaRepository<RegistroSina
 
     List<RegistroSinalVital> findByPacienteIdAndHoraRegistroBetweenOrderByHoraRegistroDesc(Long pacienteId, LocalDateTime desde, LocalDateTime ate);
 
+    // Motor de regras: medicoes do mesmo tipo no dia anterior, para detectar alerta persistente.
+    List<RegistroSinalVital> findByPacienteIdAndTipoSinalVitalAndHoraRegistroBetween(Long pacienteId, TipoSinalVital tipoSinalVital,
+                                                                                     LocalDateTime desde, LocalDateTime ate);
+
     // RF07: o ultimo lancamento do paciente, para edicao/exclusao.
     Optional<RegistroSinalVital> findFirstByPacienteIdOrderByHoraRegistroDesc(Long pacienteId);
 }

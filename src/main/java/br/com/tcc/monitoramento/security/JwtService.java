@@ -24,6 +24,10 @@ public class JwtService {
     }
 
     public String gerarToken(UsuarioAutenticado usuario) {
+        return gerarToken(usuario, 0);
+    }
+
+    public String gerarToken(UsuarioAutenticado usuario, int versaoSessao) {
         Date agora = new Date();
         Date expiracao = new Date(agora.getTime() + validadeMinutos * 60 * 1000);
 
@@ -31,6 +35,7 @@ public class JwtService {
                 .subject(usuario.getUsername())
                 .claim("id", usuario.getId())
                 .claim("tipo", usuario.getTipo().name())
+                .claim("versao", versaoSessao)
                 .issuedAt(agora)
                 .expiration(expiracao)
                 .signWith(chave)

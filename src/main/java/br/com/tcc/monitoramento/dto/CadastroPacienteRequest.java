@@ -15,7 +15,7 @@ public class CadastroPacienteRequest {
     private String email;
 
     @NotBlank(message = "A senha e' obrigatoria")
-    @Size(min = 8, message = "A senha deve ter pelo menos 8 caracteres")
+    @Size(min = 8, max = 72, message = "Use uma senha de 8 a 72 caracteres")
     private String senha;
 
     private int idade;

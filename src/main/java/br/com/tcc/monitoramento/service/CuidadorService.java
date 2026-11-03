@@ -47,7 +47,4 @@ public class CuidadorService {
         cuidadorRepository.deleteById(id);
     }
 
-
-
-
 }

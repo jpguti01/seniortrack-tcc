@@ -30,6 +30,14 @@ public abstract class Usuario {
     @Column(name = "senha_hash", nullable = false)
     protected String senhaHash;
 
+    // Incrementada na recuperação de senha para invalidar sessões anteriores.
+    @Column(name = "versao_sessao")
+    private Integer versaoSessao;
+
+    @JsonIgnore
+    public int getVersaoSessao() { return versaoSessao == null ? 0 : versaoSessao; }
+    public void setVersaoSessao(int versao) { this.versaoSessao = versao; }
+
     @Column(name = "criado_em", nullable = false, updatable = false)
     protected LocalDateTime criadoEm;
 

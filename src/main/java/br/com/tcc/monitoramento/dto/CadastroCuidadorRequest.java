@@ -15,11 +15,17 @@ public class CadastroCuidadorRequest {
     private String email;
 
     @NotBlank(message = "A senha e' obrigatoria")
-    @Size(min = 8, message = "A senha deve ter pelo menos 8 caracteres")
+    @Size(min = 8, max = 72, message = "Use uma senha de 8 a 72 caracteres")
     private String senha;
 
     private int idade;
     private String telefone;
+
+    @Size(max = 40, message = "Código de convite inválido")
+    private String codigoConvite;
+
+    public String getCodigoConvite() { return codigoConvite; }
+    public void setCodigoConvite(String codigoConvite) { this.codigoConvite = codigoConvite; }
 
     public String getNome() {
         return nome;

@@ -23,6 +23,17 @@ public class Alerta {
     @Column(nullable = false)
     private boolean resolvido;
 
+    // Nulo nos alertas criados antes desta coluna existir; o app trata como ATENCAO.
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private Gravidade gravidade;
+
+    // True quando o mesmo sinal ja tinha ficado fora da faixa no dia anterior.
+    // Wrapper (e nao boolean) porque a coluna e' adicionada em tabelas que ja
+    // tem linhas, e o PostgreSQL recusaria um NOT NULL sem valor nelas.
+    @Column(name = "persistente")
+    private Boolean persistente;
+
     // Cada registro de sinal vital gera no maximo um alerta.
     @OneToOne
     @JoinColumn(name = "registro_sinal_vital_id", nullable = false, unique = true)
@@ -68,6 +79,22 @@ public class Alerta {
 
     public void setResolvido(boolean resolvido) {
         this.resolvido = resolvido;
+    }
+
+    public Gravidade getGravidade() {
+        return gravidade;
+    }
+
+    public void setGravidade(Gravidade gravidade) {
+        this.gravidade = gravidade;
+    }
+
+    public boolean isPersistente() {
+        return Boolean.TRUE.equals(persistente);
+    }
+
+    public void setPersistente(boolean persistente) {
+        this.persistente = persistente;
     }
 
     public RegistroSinalVital getRegistroSinalVital() {
