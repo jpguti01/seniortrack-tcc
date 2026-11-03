@@ -1,0 +1,34 @@
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+# SDK baixado pelo build da Vercel (scripts/vercel-install.sh).
+/flutter/
+.vercel
+.idea/
+*.iml
+# Preserve the web entry points and branding, excluding generated scaffolding.
+web/*
+!web/index.html
+!web/manifest.json
+!web/favicon*.png
+!web/favicon.ico
+!web/icons/
+web/icons/*
+!web/icons/seniortrack*.png
+!web/icons/apple-touch-icon.png
+
+# Native branding can be committed independently of generated Android files.
+android/*
+!android/app/
+android/app/*
+!android/app/src/
+android/app/src/*
+!android/app/src/main/
+android/app/src/main/*
+!android/app/src/main/AndroidManifest.xml
+!android/app/src/main/res/
+android/app/src/main/res/*
+!android/app/src/main/res/mipmap-*/
+android/app/src/main/res/mipmap-*/*
+!android/app/src/main/res/mipmap-*/ic_launcher.png

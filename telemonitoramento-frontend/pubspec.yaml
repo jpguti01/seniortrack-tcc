@@ -1,0 +1,55 @@
+name: telemonitoramento_app
+description: "SeniorTrack — acompanhamento de sinais vitais para idosos (TCC)"
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # Chamadas HTTP para a API REST (Spring Boot)
+  http: ^1.2.2
+
+  # Gerenciamento de estado simples (ChangeNotifier)
+  provider: ^6.1.2
+
+  # Guarda o token JWT de forma segura no dispositivo
+  flutter_secure_storage: ^9.2.2
+
+  # Formatação de datas em pt-BR
+  intl: ^0.19.0
+
+  # Tipografia (Source Serif 4 + Work Sans) para a identidade visual do app
+  google_fonts: ^6.2.1
+
+  # Gráfico de evolução dos sinais vitais (visão do cuidador)
+  fl_chart: ^0.69.0
+  url_launcher: ^6.3.3
+  pdf: ^3.13.1
+  printing: ^5.15.1
+  flutter_tts: ^4.2.5
+  speech_to_text: ^7.5.0
+  image_picker: ^1.2.4
+  web: ^1.1.2
+  local_auth: 2.3.0
+  google_sign_in: 6.3.0
+  google_sign_in_web: 0.12.4+4
+  qr_flutter: 4.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/branding/logo.png
+    - assets/branding/emblem.png
+    - assets/fonts/WorkSans-Regular.ttf
+    - assets/fonts/WorkSans-Bold.ttf
+    - assets/fonts/WorkSans-OFL.txt
