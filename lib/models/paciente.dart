@@ -5,6 +5,7 @@ class Paciente {
   final String email;
   final int idade;
   final String? telefone;
+  final ContatoCuidador? cuidador;
 
   Paciente({
     required this.id,
@@ -12,6 +13,7 @@ class Paciente {
     required this.email,
     required this.idade,
     this.telefone,
+    this.cuidador,
   });
 
   factory Paciente.fromJson(Map<String, dynamic> json) {
@@ -21,6 +23,20 @@ class Paciente {
       email: json['email'] as String,
       idade: json['idade'] as int,
       telefone: json['telefone'] as String?,
+      cuidador: json['cuidador'] is Map<String, dynamic>
+          ? ContatoCuidador.fromJson(json['cuidador'] as Map<String, dynamic>)
+          : null,
     );
   }
+}
+
+class ContatoCuidador {
+  final String nome;
+  final String? telefone;
+  const ContatoCuidador({required this.nome, this.telefone});
+  factory ContatoCuidador.fromJson(Map<String, dynamic> json) =>
+      ContatoCuidador(
+        nome: json['nome'] as String,
+        telefone: json['telefone'] as String?,
+      );
 }

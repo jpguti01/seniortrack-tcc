@@ -11,12 +11,14 @@ class SolicitacaoVinculoCard extends StatelessWidget {
   final SolicitacaoVinculo solicitacao;
   final VoidCallback aoAceitar;
   final VoidCallback aoRecusar;
+  final bool processando;
 
   const SolicitacaoVinculoCard({
     super.key,
     required this.solicitacao,
     required this.aoAceitar,
     required this.aoRecusar,
+    this.processando = false,
   });
 
   @override
@@ -55,7 +57,7 @@ class SolicitacaoVinculoCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: aoRecusar,
+                    onPressed: processando ? null : aoRecusar,
                     style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(44)),
                     child: const Text('Recusar'),
                   ),
@@ -63,7 +65,7 @@ class SolicitacaoVinculoCard extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: aoAceitar,
+                    onPressed: processando ? null : aoAceitar,
                     style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(44)),
                     child: const Text('Aceitar'),
                   ),

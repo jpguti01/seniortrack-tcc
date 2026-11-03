@@ -20,6 +20,7 @@ class ApiClient {
   );
 
   final _armazenamento = const FlutterSecureStorage();
+  bool sessaoBloqueada = false;
   static const _chaveToken = 'jwt_token';
   static const _chaveSessao = 'sessao_usuario';
 
@@ -34,7 +35,8 @@ class ApiClient {
 
   Future<String?> lerSessaoJson() => _armazenamento.read(key: _chaveSessao);
 
-  Future<String?> lerToken() => _armazenamento.read(key: _chaveToken);
+  Future<String?> lerToken() async =>
+      sessaoBloqueada ? null : await _armazenamento.read(key: _chaveToken);
 
   Future<void> limparToken() async {
     await _armazenamento.delete(key: _chaveToken);
@@ -62,12 +64,9 @@ class ApiClient {
       return jsonDecode(utf8.decode(resposta.bodyBytes));
     }
 
-    if (resposta.statusCode == 401 || resposta.statusCode == 403) {
-      throw ApiException(resposta.statusCode,
-          'Sessão expirada ou acesso não permitido. Faça login novamente.');
-    }
-
-    String mensagem = 'Erro inesperado (${resposta.statusCode}).';
+    String mensagem = resposta.statusCode == 401 || resposta.statusCode == 403
+        ? 'Sessão expirada ou acesso não permitido. Faça login novamente.'
+        : 'Não foi possível concluir. Tente novamente em alguns instantes.';
     try {
       final corpo = jsonDecode(utf8.decode(resposta.bodyBytes));
       if (corpo is Map<String, dynamic>) {
@@ -92,7 +91,8 @@ class ApiClient {
     return _tratarResposta(resposta);
   }
 
-  Future<dynamic> post(String caminho, {Object? corpo, bool autenticado = true}) async {
+  Future<dynamic> post(String caminho,
+      {Object? corpo, bool autenticado = true}) async {
     final resposta = await http.post(
       _uri(caminho),
       headers: await _headers(autenticado: autenticado),
@@ -111,7 +111,8 @@ class ApiClient {
   }
 
   Future<dynamic> delete(String caminho) async {
-    final resposta = await http.delete(_uri(caminho), headers: await _headers());
+    final resposta =
+        await http.delete(_uri(caminho), headers: await _headers());
     return _tratarResposta(resposta);
   }
 }

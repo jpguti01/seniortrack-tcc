@@ -13,12 +13,57 @@ class AuthService {
     return sessao;
   }
 
-  Future<SessaoUsuario> login(String email, String senha) async {
+  Future<SessaoUsuario> login(String email, String senha,
+      {TipoUsuario? perfil}) async {
     final json = await _api.post(
       '/auth/login',
-      corpo: {'email': email, 'senha': senha},
+      corpo: {
+        'email': email,
+        'senha': senha,
+        if (perfil != null) 'perfil': perfil.name.toUpperCase()
+      },
       autenticado: false,
     );
+    return _processarResposta(json);
+  }
+
+  Future<Map<String, bool>> opcoes() async {
+    final json =
+        await _api.get('/auth/opcoes').timeout(const Duration(seconds: 8));
+    return {'codigo': json['codigo'] == true, 'google': json['google'] == true};
+  }
+
+  Future<String> solicitarCodigo(
+      String telefone, TipoUsuario perfil, String canal,
+      {bool recuperar = false}) async {
+    final json =
+        await _api.post('/auth/codigo/solicitar', autenticado: false, corpo: {
+      'telefone': telefone,
+      'perfil': perfil.name.toUpperCase(),
+      'canal': canal,
+      'finalidade': recuperar ? 'recuperacao' : 'login',
+    });
+    return json['desafio'] as String;
+  }
+
+  Future<SessaoUsuario> confirmarCodigo(String desafio, String codigo,
+      {String? novaSenha}) async {
+    final json = await _api.post(
+      novaSenha == null ? '/auth/codigo/confirmar' : '/auth/senha/recuperar',
+      autenticado: false,
+      corpo: {
+        'desafio': desafio,
+        'codigo': codigo,
+        if (novaSenha != null) 'novaSenha': novaSenha
+      },
+    );
+    return _processarResposta(json);
+  }
+
+  Future<SessaoUsuario> google(String idToken, TipoUsuario perfil) async {
+    final json = await _api.post('/auth/google',
+        autenticado: false,
+        corpo: {'idToken': idToken, 'perfil': perfil.name.toUpperCase()});
     return _processarResposta(json);
   }
 
@@ -49,6 +94,7 @@ class AuthService {
     required String senha,
     required int idade,
     required String telefone,
+    String? codigoConvite,
   }) async {
     final json = await _api.post(
       '/auth/cadastro/cuidador',
@@ -58,6 +104,7 @@ class AuthService {
         'senha': senha,
         'idade': idade,
         'telefone': telefone,
+        if (codigoConvite != null) 'codigoConvite': codigoConvite,
       },
       autenticado: false,
     );
@@ -68,6 +115,10 @@ class AuthService {
     final json = await _api.lerSessaoJson();
     if (json == null) return null;
     return SessaoUsuario.fromJson(jsonDecode(json) as Map<String, dynamic>);
+  }
+
+  Future<void> validarSessao() async {
+    await _api.get('/sessao').timeout(const Duration(seconds: 10));
   }
 
   Future<void> logout() => _api.limparToken();

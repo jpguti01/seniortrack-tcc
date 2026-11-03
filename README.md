@@ -1,6 +1,19 @@
-# telemonitoramento_app
+# SeniorTrack
 
 A new Flutter project.
+
+## Acesso e cadastro
+
+O SeniorTrack oferece e-mail/senha, código por SMS ou WhatsApp, recuperação de senha,
+Google e proteção da sessão por biometria em aparelhos compatíveis. As opções
+externas só ficam disponíveis quando configuradas no backend e no aplicativo.
+
+Instruções, variáveis de ambiente, requisitos de dispositivos e endpoints estão em
+[Autenticação](../telemonitoramento-backend/docs/AUTENTICACAO.md).
+
+A tela de acesso inclui controles A−/A+, leitura por voz, alto contraste e
+mensagens de erro com instruções. O cadastro de cuidador aceita um convite opcional
+gerado pelo paciente em **Minha conta → Convidar meu cuidador**.
 
 ## Getting Started
 

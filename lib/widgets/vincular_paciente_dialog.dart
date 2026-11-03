@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../services/api_exception.dart';
 import '../services/paciente_service.dart';
+import '../theme/app_theme.dart';
 
-/// RF05, US05: formulário para o cuidador vincular um paciente já cadastrado
-/// à sua conta, informando o e-mail dele.
+/// RF05, US05: formulário para o cuidador solicitar vínculo com um paciente
+/// já cadastrado, informando o e-mail dele. O vínculo só vale depois que o
+/// próprio paciente aceita no app dele.
 Future<bool?> abrirDialogoVincularPaciente(BuildContext context) {
   return showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
     builder: (_) => const _FormularioVincularPaciente(),
   );
@@ -36,7 +39,7 @@ class _FormularioVincularPacienteState extends State<_FormularioVincularPaciente
     super.dispose();
   }
 
-  Future<void> _vincular() async {
+  Future<void> _solicitar() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() {
       _enviando = true;
@@ -48,7 +51,7 @@ class _FormularioVincularPacienteState extends State<_FormularioVincularPaciente
     } on ApiException catch (e) {
       setState(() => _erro = e.mensagem);
     } catch (e) {
-      setState(() => _erro = 'Não foi possível vincular. Verifique sua conexão.');
+      setState(() => _erro = 'Não foi possível enviar. Verifique sua conexão.');
     } finally {
       if (mounted) setState(() => _enviando = false);
     }
@@ -58,8 +61,8 @@ class _FormularioVincularPacienteState extends State<_FormularioVincularPaciente
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-        left: 24, right: 24, top: 24,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        left: 24, right: 24, top: 28,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 28,
       ),
       child: Form(
         key: _formKey,
@@ -67,34 +70,58 @@ class _FormularioVincularPacienteState extends State<_FormularioVincularPaciente
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('Solicitar vínculo', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            const Text(
-              'O paciente vai receber o pedido no app dele e precisa aceitar antes do vínculo valer.',
-              style: TextStyle(color: Colors.black54),
+            Center(
+              child: Container(
+                width: 40, height: 4,
+                decoration: BoxDecoration(color: AppTheme.texto.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(2)),
+              ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
+            Center(
+              child: Container(
+                width: 56, height: 56,
+                decoration: BoxDecoration(color: AppTheme.primaria.withValues(alpha: 0.1), shape: BoxShape.circle),
+                child: const Icon(Icons.favorite_rounded, color: AppTheme.primaria, size: 26),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Pedir para cuidar de alguém',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.sourceSerif4(fontSize: 21, fontWeight: FontWeight.w600, color: AppTheme.texto),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'O paciente recebe seu pedido no app e decide se aceita. Nada é compartilhado sem a permissão dele.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: AppTheme.texto.withValues(alpha: 0.6), height: 1.4),
+            ),
+            const SizedBox(height: 24),
             if (_erro != null) ...[
-              Text(_erro!, style: const TextStyle(color: Colors.red)),
-              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(color: AppTheme.alerta.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+                child: Text(_erro!, style: const TextStyle(color: AppTheme.alerta)),
+              ),
+              const SizedBox(height: 16),
             ],
             TextFormField(
               controller: _emailController,
               autofocus: true,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(labelText: 'E-mail do paciente'),
+              decoration: const InputDecoration(labelText: 'E-mail do paciente', prefixIcon: Icon(Icons.mail_outline_rounded)),
               validator: (v) => (v == null || !v.contains('@')) ? 'Informe um e-mail válido' : null,
-              onFieldSubmitted: (_) => _vincular(),
+              onFieldSubmitted: (_) => _solicitar(),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: _enviando ? null : _vincular,
+              onPressed: _enviando ? null : _solicitar,
               child: _enviando
                   ? const SizedBox(
                       height: 24, width: 24,
                       child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                     )
-                  : const Text('Enviar solicitação'),
+                  : const Text('Enviar pedido'),
             ),
           ],
         ),
