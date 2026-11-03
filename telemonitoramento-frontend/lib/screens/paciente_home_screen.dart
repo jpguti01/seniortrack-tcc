@@ -336,7 +336,8 @@ class _PacienteHomeScreenState extends State<PacienteHomeScreen> {
               maxLines: 3,
               minLines: 1,
               decoration: const InputDecoration(
-                  hintText: 'Ex.: dor nas costas desde cedo')),
+                  hintText: 'Ex.: dor nas costas desde cedo',
+                  counterText: '')),
         ]),
         actions: [
           TextButton(

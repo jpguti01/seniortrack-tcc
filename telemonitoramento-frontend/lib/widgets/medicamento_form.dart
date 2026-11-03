@@ -154,7 +154,8 @@ class _FormularioMedicamentoState extends State<_FormularioMedicamento> {
                 controller: _nome,
                 maxLength: 100,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(labelText: 'Nome do remédio'),
+                decoration: const InputDecoration(
+                    labelText: 'Nome do remédio', counterText: ''),
                 validator: (v) => (v == null || v.trim().isEmpty)
                     ? 'Informe o nome do remédio'
                     : null,
@@ -165,7 +166,8 @@ class _FormularioMedicamentoState extends State<_FormularioMedicamento> {
                 maxLength: 60,
                 decoration: const InputDecoration(
                     labelText: 'Dosagem (opcional)',
-                    hintText: 'Ex.: 50 mg, 1 comprimido'),
+                    hintText: 'Ex.: 50 mg, 1 comprimido',
+                    counterText: ''),
               ),
               const SizedBox(height: 8),
               TextFormField(
@@ -174,7 +176,8 @@ class _FormularioMedicamentoState extends State<_FormularioMedicamento> {
                 textCapitalization: TextCapitalization.sentences,
                 decoration: const InputDecoration(
                     labelText: 'Instruções (opcional)',
-                    hintText: 'Ex.: tomar após o café da manhã'),
+                    hintText: 'Ex.: tomar após o café da manhã',
+                    counterText: ''),
               ),
               const SizedBox(height: 12),
               const Text('Horários',
@@ -182,7 +185,7 @@ class _FormularioMedicamentoState extends State<_FormularioMedicamento> {
               const SizedBox(height: 8),
               Wrap(spacing: 8, runSpacing: 8, children: [
                 for (final horario in _horarios)
-                  InputChip(
+                  Chip(
                     label: Text(horario,
                         style: const TextStyle(fontWeight: FontWeight.w600)),
                     onDeleted: () => setState(() => _horarios.remove(horario)),
