@@ -1,0 +1,6 @@
+# Fica so na maquina local: backups do banco, documentos do TCC e arquivos temporarios
+/.local-backups/
+/.playwright-mcp/
+/unpacked/
+/*.docx
+/*.pdf
